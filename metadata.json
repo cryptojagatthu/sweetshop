@@ -1,0 +1,6 @@
+{
+  "name": "Haji Syeed Sweets",
+  "description": "Premium heritage pure ghee sweets brand website since 1942.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

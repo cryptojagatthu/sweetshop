@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", "Cormorant Garamond", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --color-brand-cream: #FFF8EF;
+  --color-brand-beige: #F7F2EA;
+  --color-brand-gold: #D4A437;
+  --color-brand-gold-light: #E8C16A;
+  --color-brand-gold-dark: #B88A28;
+  --color-brand-brown: #4E342E;
+  --color-brand-brown-dark: #3E2924;
+  --color-brand-charcoal: #222222;
+  --color-brand-maroon: #800000;
+  
+  --color-background: var(--color-brand-cream);
+  --color-foreground: var(--color-brand-charcoal);
+}
+
+@layer base {
+  body {
+    @apply bg-brand-cream text-brand-charcoal font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+/* Custom Scrollbar for elegant feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-brand-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-gold);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-brown);
+}
+
