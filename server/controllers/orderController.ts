@@ -19,17 +19,13 @@ export const confirmOrder = async (req: Request, res: Response) => {
     
     let docId = `mock_doc_${Date.now()}`;
     let savedData = finalOrder as any;
+    // 🚀 PERFORMANCE OPTIMIZATION: Just use the timestamp directly instead of querying Firebase again!
     savedData.createdAt = new Date().toISOString();
     
     try {
       // Save to Firestore using admin SDK to avoid direct frontend saving
       const docRef = await ordersRef.add(finalOrder);
       docId = docRef.id;
-      
-      // Get doc for actual timestamp if needed
-      const savedDoc = await docRef.get();
-      savedData = savedDoc.data() || finalOrder;
-      savedData.createdAt = savedData.createdAt ? savedData.createdAt.toDate().toISOString() : new Date().toISOString(); 
     } catch (dbError: any) {
       if (dbError.message.includes('credentials') || dbError.message.includes('Project Id')) {
         console.warn('⚠️ Local Testing Mode: Mocking Firestore save because credentials are not configured.');
@@ -38,12 +34,13 @@ export const confirmOrder = async (req: Request, res: Response) => {
       }
     }
     
+    // 🚀 PERFORMANCE OPTIMIZATION: Fire-and-forget Telegram notifications!
     // Send standard New Order Notification (this will just console.log if TELEGRAM config is missing)
-    await sendTelegramNotification('New Order', savedData);
+    sendTelegramNotification('New Order', savedData).catch(console.error);
 
     // Check for high value alert
     if (savedData.amount > 5000 || savedData.instructions?.toLowerCase().includes('bulk') || savedData.instructions?.toLowerCase().includes('wedding')) {
-      await sendTelegramNotification('Bulk Order Alert', savedData);
+      sendTelegramNotification('Bulk Order Alert', savedData).catch(console.error);
     }
 
     res.json({ success: true, orderId: savedData.orderId || `ORD_MOCK_${Date.now()}`, docId });

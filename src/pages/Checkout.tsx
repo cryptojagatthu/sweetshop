@@ -56,6 +56,12 @@ export default function Checkout() {
     setLoading(true);
 
     try {
+      // 🚀 PERFORMANCE OPTIMIZATION: Bypass /api/orders/create entirely for COD!
+      if (formData.paymentMethod === "COD") {
+        await completeOrderSaving(`ORD_COD_${Date.now()}`, "Pending");
+        return; // Exit early!
+      }
+
       const resp = await fetch(`${API_URL}/api/orders/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -121,13 +127,8 @@ export default function Checkout() {
         });
         rzp1.open();
       } else {
-        // COD or mock bypass
-        if (formData.paymentMethod === "COD") {
-          completeOrderSaving(`ORD_COD_${Date.now()}`, "Pending");
-        } else {
-           // Direct mock mode
-           completeOrderSaving(order.id || `ORD_MOCK_${Date.now()}`, "Paid");
-        }
+         // Direct mock mode
+         completeOrderSaving(order.id || `ORD_MOCK_${Date.now()}`, "Paid");
       }
     } catch (err) {
       console.error(err);
