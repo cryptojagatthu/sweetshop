@@ -87,6 +87,43 @@ apiRouter.get("/orders/track", async (req, res) => {
   }
 });
 
+apiRouter.get("/orders/history", async (req, res) => {
+  try {
+    const { phone } = req.query;
+    if (!phone) return res.status(400).json({ error: "Missing phone number" });
+    
+    // Privacy: Only return necessary fields, not the full address details for history view
+    const qs = await adminDb.collection("orders")
+      .where("phone", "==", phone)
+      .orderBy("createdAt", "desc")
+      .limit(10)
+      .get();
+      
+    if (qs.empty) return res.json({ orders: [] });
+    
+    const orders = qs.docs.map(doc => {
+      const data = doc.data();
+      if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+        data.createdAt = data.createdAt.toDate().toISOString();
+      }
+      return {
+        orderId: data.orderId,
+        date: data.createdAt,
+        amount: data.amount,
+        status: data.status,
+        items: data.items,
+        deliveryType: data.deliveryType,
+        paymentMethod: data.paymentMethod
+      };
+    });
+    
+    res.json({ orders });
+  } catch (e: any) {
+    console.error("Error fetching history", e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Mount the apiRouter under both /api and / to handle local and Vercel routing
 app.use("/api", apiRouter);
 app.use("/", apiRouter);

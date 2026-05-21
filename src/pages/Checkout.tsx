@@ -40,7 +40,16 @@ export default function Checkout() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const newFormData = { ...formData, [name]: value };
+    
+    // Auto-fill pincode based on city selection
+    if (name === 'city') {
+      if (value === 'Madanapalle') newFormData.pincode = '517325';
+      else if (value === 'Raychoty') newFormData.pincode = '516269';
+    }
+    
+    setFormData(newFormData);
   };
 
   const loadRazorpay = async () => {

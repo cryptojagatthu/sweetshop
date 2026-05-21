@@ -106,8 +106,8 @@ export const sendTelegramNotification = async (type: NotificationType, data: any
 const formatMessage = (type: NotificationType, data: any): string => {
   switch (type) {
     case 'New Order': {
-      const dateStr = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
-      const timeStr = data.createdAt ? new Date(data.createdAt).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'N/A';
+      const dateStr = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
+      const timeStr = data.createdAt ? new Date(data.createdAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true }) : 'N/A';
       
       const itemsList = (data.items || []).map((i: any) => `• ${i.weight || ''} ${i.name} ×${i.quantity}`).join('\n');
       

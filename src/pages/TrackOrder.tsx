@@ -35,8 +35,8 @@ export default function TrackOrder() {
     const targetOrderId = directOrderId || orderId;
     const targetPhone = directPhone || phone;
     
-    if (!targetOrderId || !targetPhone) {
-      toast.error("Please enter both Order ID and Phone Number");
+    if (!targetPhone) {
+      toast.error("Please enter your Phone Number");
       return;
     }
 
@@ -49,17 +49,31 @@ export default function TrackOrder() {
     setOrderData(null);
 
     try {
-      const resp = await fetch(`${API_URL}/api/orders/track?orderId=${encodeURIComponent(targetOrderId)}&phone=${encodeURIComponent(targetPhone)}`);
-      
-      if (!resp.ok) {
-        if (resp.status === 404) {
-          toast.error("No order found with these details.");
+      if (targetOrderId) {
+        // Track specific order
+        const resp = await fetch(`${API_URL}/api/orders/track?orderId=${encodeURIComponent(targetOrderId)}&phone=${encodeURIComponent(targetPhone)}`);
+        if (!resp.ok) {
+          if (resp.status === 404) toast.error("No order found with these details.");
+          else toast.error("Could not fetch order details.");
         } else {
-          toast.error("Could not fetch order details.");
+          const data = await resp.json();
+          setOrderData(data.order);
         }
       } else {
-        const data = await resp.json();
-        setOrderData(data.order);
+        // Fetch order history by phone
+        const resp = await fetch(`${API_URL}/api/orders/history?phone=${encodeURIComponent(targetPhone)}`);
+        if (!resp.ok) {
+          toast.error("Could not fetch order history.");
+        } else {
+          const data = await resp.json();
+          if (data.orders.length === 0) {
+            toast.error("No orders found for this phone number.");
+          } else {
+            setRecentOrders(data.orders);
+            localStorage.setItem('sweetshop_recent_orders', JSON.stringify(data.orders.slice(0, 5)));
+            toast.success(`Found ${data.orders.length} orders!`);
+          }
+        }
       }
     } catch (error) {
       console.error(error);
@@ -77,17 +91,17 @@ export default function TrackOrder() {
         
         <div className="text-center mb-10">
           <h1 className="text-4xl font-serif font-bold text-brand-brown mb-4">Track Your Order</h1>
-          <p className="text-brand-charcoal/70">Enter your order ID and phone number to see the current status.</p>
+          <p className="text-brand-charcoal/70">Enter your order ID and phone number to see the current status. Leave Order ID blank to search your history.</p>
         </div>
 
         <form onSubmit={handleTrack} className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-brand-brown/10 mb-12 flex flex-col md:flex-row gap-4">
           <div className="flex-1">
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">Order ID</label>
-            <input required value={orderId} onChange={e => setOrderId(e.target.value)} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold" placeholder="e.g. order_1234..." />
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">Order ID (Optional)</label>
+            <input value={orderId} onChange={e => setOrderId(e.target.value)} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold" placeholder="Leave blank to fetch history" />
           </div>
           <div className="flex-1">
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">Phone Number</label>
-            <input required value={phone} onChange={e => setPhone(e.target.value)} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold" placeholder="+91 9876543210" />
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">Phone Number *</label>
+            <input required type="tel" pattern="[0-9]{10}" maxLength={10} value={phone} onChange={e => setPhone(e.target.value)} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold" placeholder="10-digit mobile number" />
           </div>
           <div className="flex items-end">
              <button type="submit" disabled={loading} className="w-full md:w-auto bg-brand-brown hover:bg-brand-brown-dark text-white px-8 py-3.5 rounded text-xs font-bold tracking-[2px] uppercase transition-colors flex items-center justify-center gap-2">
