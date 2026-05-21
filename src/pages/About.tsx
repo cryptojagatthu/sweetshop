@@ -89,7 +89,7 @@ export default function About() {
               { year: "1942", title: "The Humble Beginning", desc: "Haji Syeed opened a small sweet stall in Madanapalle, introducing pure ghee sweets made with family recipes." },
               { year: "1970", title: "Passing the Baton", desc: "The next generation took over, expanding the menu while strictly adhering to the original quality standards." },
               { year: "2005", title: "A Landmark Establishment", desc: "Relocated to the current flagship store at Avenue Rd, becoming a landmark in the city." },
-              { year: "2024", title: "Modern Heritage", desc: "Continuing the 85-year legacy, serving thousands of loyal customers while embracing modern delivery channels." }
+              { year: "2026", title: "Modern Heritage", desc: "Continuing the 85-year legacy, serving thousands of loyal customers while embracing modern delivery channels." }
             ].map((item, idx) => (
               <motion.div 
                 key={idx}
