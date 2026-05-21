@@ -56,13 +56,21 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      // 1. Create order on backend (mocked razorpay via express server)
       const resp = await fetch(`${API_URL}/api/orders/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: finalTotal * 100 }) // Razorpay expects paise
       });
-      const order = await resp.json();
+      
+      let order;
+      try {
+        order = await resp.json();
+      } catch (parseError) {
+        console.error("API Response is not JSON. Likely hitting frontend fallback.");
+        toast.error(`Backend API not reachable! If on Vercel, ensure VITE_API_URL is set correctly.`);
+        setLoading(false);
+        return;
+      }
 
       if (formData.paymentMethod === "Razorpay" && order.id) {
         // Load razorpay window
