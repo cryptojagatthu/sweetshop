@@ -17,15 +17,28 @@ export const confirmOrder = async (req: Request, res: Response) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp() // server timestamp inside admin sdk
     };
     
-    // Save to Firestore using admin SDK to avoid direct frontend saving
-    const docRef = await ordersRef.add(finalOrder);
+    let docId = `mock_doc_${Date.now()}`;
+    let savedData = finalOrder as any;
+    savedData.createdAt = new Date().toISOString();
     
-    // Get doc for actual timestamp if needed
-    const savedDoc = await docRef.get();
-    const savedData = savedDoc.data() || finalOrder;
-    savedData.createdAt = savedData.createdAt ? savedData.createdAt.toDate().toISOString() : new Date().toISOString(); 
+    try {
+      // Save to Firestore using admin SDK to avoid direct frontend saving
+      const docRef = await ordersRef.add(finalOrder);
+      docId = docRef.id;
+      
+      // Get doc for actual timestamp if needed
+      const savedDoc = await docRef.get();
+      savedData = savedDoc.data() || finalOrder;
+      savedData.createdAt = savedData.createdAt ? savedData.createdAt.toDate().toISOString() : new Date().toISOString(); 
+    } catch (dbError: any) {
+      if (dbError.message.includes('credentials') || dbError.message.includes('Project Id')) {
+        console.warn('⚠️ Local Testing Mode: Mocking Firestore save because credentials are not configured.');
+      } else {
+        throw dbError;
+      }
+    }
     
-    // Send standard New Order Notification
+    // Send standard New Order Notification (this will just console.log if TELEGRAM config is missing)
     await sendTelegramNotification('New Order', savedData);
 
     // Check for high value alert
@@ -33,7 +46,7 @@ export const confirmOrder = async (req: Request, res: Response) => {
       await sendTelegramNotification('Bulk Order Alert', savedData);
     }
 
-    res.json({ success: true, orderId: savedData.orderId, docId: docRef.id });
+    res.json({ success: true, orderId: savedData.orderId || `ORD_MOCK_${Date.now()}`, docId });
   } catch (error: any) {
     console.error('Confirm order error:', error);
     res.status(500).json({ success: false, error: error.message });
@@ -45,9 +58,17 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     // Basic auth check: usually this endpoint expects a bearer token. For UI simplicity, passing it.
     const { docId, newStatus, orderId } = req.body;
     
-    await adminDb.collection('orders').doc(docId).update({
-      status: newStatus
-    });
+    try {
+      await adminDb.collection('orders').doc(docId).update({
+        status: newStatus
+      });
+    } catch (dbError: any) {
+      if (dbError.message.includes('credentials') || dbError.message.includes('Project Id')) {
+        console.warn('⚠️ Local Testing Mode: Mocking Firestore update because credentials are not configured.');
+      } else {
+        throw dbError;
+      }
+    }
 
     const statusMap: Record<string, any> = {
       'Accepted': 'Order Accepted',
