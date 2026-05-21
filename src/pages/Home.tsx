@@ -74,7 +74,7 @@ export default function Home() {
       <div className="hidden lg:grid grid-cols-4 items-center h-[100px] border-b border-brand-brown/10 bg-white px-[60px]">
         <div className="flex flex-col gap-1 relative">
           <span className="text-[10px] uppercase text-brand-gold tracking-[2px] font-bold">Heritage</span>
-          <span className="font-serif text-[18px] text-brand-brown">80+ Years of Trust</span>
+          <span className="font-serif text-[18px] text-brand-brown">85 Years of Trust</span>
           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-[40px] bg-brand-brown/10"></div>
         </div>
         <div className="flex flex-col gap-1 relative pl-[40px]">
@@ -111,7 +111,7 @@ export default function Home() {
                 referrerPolicy="no-referrer"
               />
               <div className="absolute -bottom-8 -right-8 bg-white p-6 rounded-lg shadow-xl z-20 max-w-[200px] border border-brand-beige hidden md:block">
-                <p className="font-serif text-4xl text-brand-gold font-bold mb-1">80+</p>
+                <p className="font-serif text-4xl text-brand-gold font-bold mb-1">85</p>
                 <p className="text-sm font-medium text-brand-charcoal uppercase tracking-wider">Years of Legacy</p>
               </div>
             </motion.div>
