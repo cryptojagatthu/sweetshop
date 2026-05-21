@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { adminDb } from '../config/firebase-admin';
+import { adminDb } from '../config/firebase-admin.js';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const DEFAULT_CHAT_ID = process.env.TELEGRAM_CHAT_ID;

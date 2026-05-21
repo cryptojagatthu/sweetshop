@@ -1,9 +1,8 @@
 import admin from 'firebase-admin';
-import firebaseConfig from '../../firebase-applet-config.json';
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    projectId: firebaseConfig.projectId
+    projectId: "gen-lang-client-0780698048"
   });
 }
 

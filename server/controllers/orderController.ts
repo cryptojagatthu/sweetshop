@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { adminDb } from '../config/firebase-admin';
-import { sendTelegramNotification } from '../services/telegramService';
+import { adminDb } from '../config/firebase-admin.js';
+import { sendTelegramNotification } from '../services/telegramService.js';
 import admin from 'firebase-admin';
 
 export const confirmOrder = async (req: Request, res: Response) => {

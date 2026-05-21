@@ -3,9 +3,9 @@ import path from "path";
 import cors from "cors";
 import 'dotenv/config';
 
-import { confirmOrder, updateOrderStatus } from "./server/controllers/orderController";
-import { startDailySummaryJob } from "./server/jobs/dailySummaryJob";
-import { adminDb } from "./server/config/firebase-admin";
+import { confirmOrder, updateOrderStatus } from "./server/controllers/orderController.js";
+import { startDailySummaryJob } from "./server/jobs/dailySummaryJob.js";
+import { adminDb } from "./server/config/firebase-admin.js";
 
 // Mock Razorpay initialization (since we may not have genuine keys)
 import Razorpay from "razorpay";

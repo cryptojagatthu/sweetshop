@@ -1,6 +1,6 @@
 import cron from 'node-cron';
-import { adminDb } from '../config/firebase-admin';
-import { sendTelegramNotification } from '../services/telegramService';
+import { adminDb } from '../config/firebase-admin.js';
+import { sendTelegramNotification } from '../services/telegramService.js';
 import admin from 'firebase-admin';
 
 export const startDailySummaryJob = () => {
