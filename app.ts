@@ -5,7 +5,7 @@ import 'dotenv/config';
 
 import { confirmOrder, updateOrderStatus } from "./server/controllers/orderController.js";
 import { startDailySummaryJob } from "./server/jobs/dailySummaryJob.js";
-import { adminDb } from "./server/config/firebase-admin.js";
+import { adminDb, adminAuth } from "./server/config/firebase-admin.js";
 
 // Mock Razorpay initialization (since we may not have genuine keys)
 import Razorpay from "razorpay";
@@ -95,13 +95,21 @@ apiRouter.get("/orders/history", async (req, res) => {
     // Privacy: Only return necessary fields, not the full address details for history view
     const qs = await adminDb.collection("orders")
       .where("phone", "==", phone)
-      .orderBy("createdAt", "desc")
-      .limit(10)
       .get();
       
     if (qs.empty) return res.json({ orders: [] });
     
-    const orders = qs.docs.map(doc => {
+    // 🚀 FIXED: Firestore requires a manual composite index if we use .where() and .orderBy() together.
+    // To avoid crashing or requiring the owner to manually configure Firebase, we sort it in memory.
+    const sortedDocs = qs.docs.sort((a, b) => {
+       const dataA = a.data();
+       const dataB = b.data();
+       const timeA = dataA.createdAt && typeof dataA.createdAt.toDate === 'function' ? dataA.createdAt.toDate().getTime() : new Date(dataA.createdAt || 0).getTime();
+       const timeB = dataB.createdAt && typeof dataB.createdAt.toDate === 'function' ? dataB.createdAt.toDate().getTime() : new Date(dataB.createdAt || 0).getTime();
+       return timeB - timeA;
+    }).slice(0, 10);
+    
+    const orders = sortedDocs.map(doc => {
       const data = doc.data();
       if (data.createdAt && typeof data.createdAt.toDate === 'function') {
         data.createdAt = data.createdAt.toDate().toISOString();
@@ -120,6 +128,42 @@ apiRouter.get("/orders/history", async (req, res) => {
     res.json({ orders });
   } catch (e: any) {
     console.error("Error fetching history", e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Admin Dashboard - Secure route to fetch all orders bypassing Firestore client rules
+apiRouter.get("/admin/orders", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "Unauthorized: Missing token" });
+    }
+    
+    const token = authHeader.split('Bearer ')[1];
+    
+    try {
+      // Verify the token to ensure the user is logged into Firebase Auth
+      await adminAuth.verifyIdToken(token);
+    } catch (authError) {
+      return res.status(403).json({ error: "Forbidden: Invalid token" });
+    }
+    
+    // Fetch all orders (adminDb bypasses security rules)
+    const qs = await adminDb.collection("orders").orderBy("createdAt", "desc").get();
+    
+    const orders = qs.docs.map(doc => {
+      const data = doc.data();
+      // Ensure timestamps are correctly converted for the frontend
+      if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+         data.createdAt = data.createdAt.toDate().toISOString();
+      }
+      return { id: doc.id, ...data };
+    });
+    
+    res.json({ success: true, orders });
+  } catch (e: any) {
+    console.error("Admin fetch error", e);
     res.status(500).json({ error: e.message });
   }
 });

@@ -21,18 +21,41 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-      const unsub = onSnapshot(q, (snapshot) => {
-        setOrders(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        setLoading(false);
-      }, (err) => {
+    let isMounted = true;
+    
+    const fetchOrders = async () => {
+      if (!user) return;
+      try {
+        const token = await user.getIdToken();
+        const resp = await fetch(`${API_URL}/api/admin/orders`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!resp.ok) throw new Error("Unauthorized or server error");
+        const json = await resp.json();
+        
+        if (json.success && isMounted) {
+          setOrders(json.orders);
+        }
+      } catch (err: any) {
         console.error(err);
-        toast.error("Error loading orders.");
-        setLoading(false);
-      });
-      return () => unsub();
-    }
+        if (isMounted) toast.error("Error loading orders from secure server.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    
+    fetchOrders();
+    
+    // Optional: Refresh every 30 seconds since we removed the real-time listener
+    const interval = setInterval(fetchOrders, 30000);
+    
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [user]);
 
   const handleLogin = async () => {

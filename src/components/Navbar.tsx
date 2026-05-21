@@ -9,9 +9,9 @@ const NAV_LINKS = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
   { name: "Sweets", path: "/sweets" },
-  { name: "Gallery", path: "/gallery" },
   { name: "Services", path: "/services" },
   { name: "Contact", path: "/contact" },
+  { name: "My Orders", path: "/track-order" },
 ];
 
 export default function Navbar() {
@@ -80,10 +80,10 @@ export default function Navbar() {
               </Link>
               <a 
                 href="tel:+918977077110" 
-                className="flex items-center gap-2 text-brand-brown hover:text-brand-gold transition-colors font-semibold uppercase tracking-[1.5px] text-[12px]"
+                className="flex items-center gap-2 text-brand-brown hover:text-brand-gold transition-colors font-semibold tracking-[1.5px] text-[13px]"
               >
                 <Phone size={15} className="text-brand-gold" />
-                <span>Call: 089770 77110</span>
+                <span>089770 77110</span>
               </a>
               <Link 
                 to="/sweets" 
@@ -136,10 +136,10 @@ export default function Navbar() {
                 </Link>
                 <a 
                   href="tel:+918977077110" 
-                  className="w-full px-5 py-3 rounded bg-brand-gold text-brand-brown hover:bg-brand-brown hover:text-white text-center font-bold transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-5 py-3 rounded bg-brand-gold text-brand-brown hover:bg-brand-brown hover:text-white text-center font-bold transition-colors flex items-center justify-center gap-2 tracking-wide"
                 >
                   <Phone size={18} />
-                  Call: 089770 77110
+                  089770 77110
                 </a>
                 <Link 
                   to="/sweets" 
