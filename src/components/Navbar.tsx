@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingBag, Phone } from "lucide-react";
 import { cn } from "../lib/utils";
 
 const NAV_LINKS = [
@@ -71,7 +71,14 @@ export default function Navbar() {
             </nav>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-6">
+              <a 
+                href="tel:+918977077110" 
+                className="flex items-center gap-2 text-brand-brown hover:text-brand-gold transition-colors font-semibold uppercase tracking-[1.5px] text-[12px]"
+              >
+                <Phone size={15} className="text-brand-gold" />
+                <span>Call: 089770 77110</span>
+              </a>
               <Link 
                 to="/sweets" 
                 className="bg-brand-brown text-white hover:bg-brand-brown-dark transition-colors px-[20px] py-[10px] rounded text-[11px] font-semibold uppercase tracking-[2px]"
@@ -114,9 +121,16 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="mt-4 pt-4 border-t border-brand-gold/20 px-3 flex flex-col gap-3">
+                <a 
+                  href="tel:+918977077110" 
+                  className="w-full px-5 py-3 rounded bg-brand-gold text-brand-brown hover:bg-brand-brown hover:text-white text-center font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  <Phone size={18} />
+                  Call: 089770 77110
+                </a>
                 <Link 
                   to="/sweets" 
-                  className="w-full px-5 py-3 rounded bg-brand-brown text-white hover:bg-brand-gold text-center font-medium transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-5 py-3 rounded bg-brand-brown text-white hover:bg-brand-brown-dark text-center font-medium transition-colors flex items-center justify-center gap-2"
                 >
                   <ShoppingBag size={18} />
                   Order Now
