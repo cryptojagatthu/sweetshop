@@ -38,13 +38,20 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
             
             {/* Logo area */}
-            <Link to="/" className="flex flex-col items-start group">
-              <span className="font-serif text-[26px] font-bold text-brand-brown uppercase tracking-[1px] transition-colors duration-300 leading-none">
-                Haji Syeed
-              </span>
-              <span className="text-[11px] uppercase tracking-[3px] font-semibold text-brand-gold mt-1 leading-none">
-                Pure Ghee Sweets
-              </span>
+            <Link to="/" className="flex items-center gap-3 group">
+              <img 
+                src="/images/logo.png" 
+                alt="Haji Syeed Pure Ghee Sweets Logo" 
+                className="h-[60px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="flex flex-col items-start">
+                <span className="font-serif text-[22px] font-bold text-brand-brown uppercase tracking-[1px] leading-none">
+                  Haji Syeed
+                </span>
+                <span className="text-[10px] uppercase tracking-[2.5px] font-semibold text-brand-gold mt-1 leading-none">
+                  Pure Ghee Sweets
+                </span>
+              </div>
             </Link>
 
             {/* Desktop Navigation */}

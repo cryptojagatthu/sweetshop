@@ -9,8 +9,18 @@ export default function Footer() {
           
           {/* Brand Info */}
           <div className="space-y-4">
-            <h3 className="font-serif text-3xl font-bold text-brand-gold">Haji Syeed</h3>
-            <p className="text-sm tracking-widest text-brand-beige/80 uppercase">Pure Ghee Sweets • Since 1942</p>
+            <div className="flex items-center gap-3">
+              <img 
+                src="/images/logo.png" 
+                alt="Haji Syeed Pure Ghee Sweets Logo" 
+                className="h-[55px] w-auto object-contain bg-white/10 p-1 rounded-full"
+              />
+              <div>
+                <h3 className="font-serif text-2xl font-bold text-brand-gold leading-tight">Haji Syeed</h3>
+                <p className="text-xs tracking-widest text-brand-beige/85 uppercase">Pure Ghee Sweets</p>
+                <p className="text-[10px] tracking-wider text-brand-beige/70 uppercase">Since 1942</p>
+              </div>
+            </div>
             <p className="text-white/70 text-sm leading-relaxed mt-4">
               Happiness crafted with pure ghee since generations. Authentic traditional sweets prepared with premium ingredients and recipes trusted for decades.
             </p>
