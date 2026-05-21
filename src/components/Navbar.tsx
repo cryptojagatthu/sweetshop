@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, ShoppingBag, Phone } from "lucide-react";
 import { cn } from "../lib/utils";
+import { useCartStore } from "../store/cartStore";
 
 const NAV_LINKS = [
   { name: "Home", path: "/" },
@@ -17,6 +18,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const cartItems = useCartStore((state) => state.items);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,6 +74,10 @@ export default function Navbar() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-6">
+              <Link to="/cart" className="relative text-brand-brown hover:text-brand-gold transition-colors flex items-center gap-1.5 mr-2">
+                <ShoppingBag size={18} />
+                <span className="text-[12px] font-semibold uppercase tracking-[1px]">Cart ({cartItems.length})</span>
+              </Link>
               <a 
                 href="tel:+918977077110" 
                 className="flex items-center gap-2 text-brand-brown hover:text-brand-gold transition-colors font-semibold uppercase tracking-[1.5px] text-[12px]"
@@ -121,6 +127,13 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="mt-4 pt-4 border-t border-brand-gold/20 px-3 flex flex-col gap-3">
+                <Link 
+                  to="/cart" 
+                  className="w-full px-5 py-3 rounded bg-brand-beige text-brand-brown hover:bg-brand-gold hover:text-white text-center font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <ShoppingBag size={18} />
+                  Cart ({cartItems.length})
+                </Link>
                 <a 
                   href="tel:+918977077110" 
                   className="w-full px-5 py-3 rounded bg-brand-gold text-brand-brown hover:bg-brand-brown hover:text-white text-center font-bold transition-colors flex items-center justify-center gap-2"
@@ -130,9 +143,8 @@ export default function Navbar() {
                 </a>
                 <Link 
                   to="/sweets" 
-                  className="w-full px-5 py-3 rounded bg-brand-brown text-white hover:bg-brand-brown-dark text-center font-medium transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-5 py-3 rounded bg-brand-brown text-white hover:bg-brand-gold text-center font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  <ShoppingBag size={18} />
                   Order Now
                 </Link>
                 <a 

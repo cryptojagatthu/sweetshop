@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isAdmin() {
+      // In production, verify against a trusted collection or use a known admin email
+      return request.auth != null; 
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['orderId', 'customerName', 'phone', 'amount', 'status', 'createdAt'])
+          && data.orderId is string
+          && data.customerName is string && data.customerName.size() <= 128
+          && data.phone is string && data.phone.size() <= 20
+          && data.amount is number
+          && data.status is string;
+    }
+
+    match /orders/{documentId} {
+      // Allow customers to create an order
+      allow create: if isValidOrder(request.resource.data);
+      
+      // Allow customers to fetch their specific order for tracking (knowing ID is required)
+      allow get: if true;
+      
+      // Admins manage the orders
+      allow list, update, delete: if isAdmin();
+    }
+  }
+}

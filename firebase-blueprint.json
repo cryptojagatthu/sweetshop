@@ -1,0 +1,33 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "Customer order data",
+      "type": "object",
+      "required": ["orderId", "customerName", "phone", "amount", "status", "createdAt"],
+      "properties": {
+        "orderId": { "type": "string" },
+        "customerName": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 20 },
+        "email": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "pincode": { "type": "string" },
+        "items": { "type": "array" },
+        "amount": { "type": "number" },
+        "status": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "deliveryType": { "type": "string" },
+        "instructions": { "type": "string" },
+        "createdAt": { "type": "number" }
+      }
+    }
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Store all customer orders"
+    }
+  }
+}
