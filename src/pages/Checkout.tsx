@@ -151,6 +151,14 @@ export default function Checkout() {
     clearCart();
     setLoading(false);
 
+    // Save to Local History
+    const historyStr = localStorage.getItem('sweetshop_recent_orders') || '[]';
+    try {
+       const history = JSON.parse(historyStr);
+       history.unshift({ orderId: paymentOrderId, phone: formData.phone, date: Date.now(), amount: finalTotal });
+       localStorage.setItem('sweetshop_recent_orders', JSON.stringify(history.slice(0, 5)));
+    } catch(e) {}
+
     // Silently process network request in the background
     try {
       const orderData = {
@@ -252,7 +260,7 @@ export default function Checkout() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">Phone Number *</label>
-                  <input required name="phone" value={formData.phone} onChange={handleChange} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold" placeholder="+91 9876543210" />
+                  <input required type="tel" pattern="[0-9]{10}" maxLength={10} name="phone" value={formData.phone} onChange={handleChange} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold" placeholder="10-digit mobile number" title="Please enter exactly 10 digits" />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">Email Address (Optional)</label>
@@ -282,7 +290,11 @@ export default function Checkout() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">City *</label>
-                    <input required={formData.deliveryType === 'Home Delivery'} name="city" value={formData.city} onChange={handleChange} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold" placeholder="Madanapalle" />
+                    <select required={formData.deliveryType === 'Home Delivery'} name="city" value={formData.city} onChange={handleChange} className="w-full border border-brand-brown/20 rounded p-3 focus:outline-none focus:border-brand-gold bg-white">
+                      <option value="" disabled>Select Town</option>
+                      <option value="Madanapalle">Madanapalle</option>
+                      <option value="Raychoty">Raychoty</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-brand-charcoal/70 mb-2">Pincode *</label>

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, Loader2, Package, ChefHat, Truck, CheckCircle } from "lucide-react";
+import { Search, Loader2, Package, ChefHat, Truck, CheckCircle, Clock } from "lucide-react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import toast from "react-hot-toast";
@@ -19,19 +19,37 @@ export default function TrackOrder() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState<any>(null);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
-  const handleTrack = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!orderId || !phone) {
+  useEffect(() => {
+    try {
+      const historyStr = localStorage.getItem('sweetshop_recent_orders');
+      if (historyStr) {
+        setRecentOrders(JSON.parse(historyStr));
+      }
+    } catch (e) {}
+  }, []);
+
+  const handleTrack = async (e?: React.FormEvent, directOrderId?: string, directPhone?: string) => {
+    if (e) e.preventDefault();
+    const targetOrderId = directOrderId || orderId;
+    const targetPhone = directPhone || phone;
+    
+    if (!targetOrderId || !targetPhone) {
       toast.error("Please enter both Order ID and Phone Number");
       return;
+    }
+
+    if (directOrderId && directPhone) {
+      setOrderId(directOrderId);
+      setPhone(directPhone);
     }
 
     setLoading(true);
     setOrderData(null);
 
     try {
-      const resp = await fetch(`${API_URL}/api/orders/track?orderId=${encodeURIComponent(orderId)}&phone=${encodeURIComponent(phone)}`);
+      const resp = await fetch(`${API_URL}/api/orders/track?orderId=${encodeURIComponent(targetOrderId)}&phone=${encodeURIComponent(targetPhone)}`);
       
       if (!resp.ok) {
         if (resp.status === 404) {
@@ -77,6 +95,35 @@ export default function TrackOrder() {
              </button>
           </div>
         </form>
+
+        {/* Recent Orders UI */}
+        {!orderData && recentOrders.length > 0 && (
+          <div className="mb-12 animate-fade-in">
+            <h2 className="text-sm font-bold text-brand-brown uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Clock size={16} /> Recent Orders
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {recentOrders.map((ro, idx) => (
+                <div 
+                  key={idx} 
+                  onClick={() => handleTrack(undefined, ro.orderId, ro.phone)}
+                  className="bg-white p-4 rounded-lg border border-brand-brown/10 shadow-sm hover:shadow-md hover:border-brand-gold cursor-pointer transition-all flex justify-between items-center group"
+                >
+                  <div>
+                    <p className="font-bold text-brand-brown text-sm">#{ro.orderId}</p>
+                    <p className="text-xs text-brand-charcoal/60 mt-1">{new Date(ro.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-brand-gold">₹{ro.amount}</p>
+                    <div className="w-8 h-8 rounded-full bg-brand-beige flex items-center justify-center text-brand-brown mt-1 ml-auto group-hover:bg-brand-gold group-hover:text-white transition-colors">
+                      <Search size={14} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <AnimatePresence>
           {orderData && (
