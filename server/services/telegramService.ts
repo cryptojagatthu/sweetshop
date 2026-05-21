@@ -14,15 +14,24 @@ export type NotificationType =
 | 'Bulk Order Alert'
 | 'Daily Sales Summary';
 
+let cachedSettings: any = null;
+let lastSettingsFetch = 0;
+
 export const sendTelegramNotification = async (type: NotificationType, data: any, retryCount = 0): Promise<boolean> => {
   // Wait, first fetch settings from db to get chat_id and if enabled
   let chatId = DEFAULT_CHAT_ID;
   let enabled = true;
   
   try {
-    const settingsDoc = await adminDb.collection('settings').doc('notifications').get();
-    if (settingsDoc.exists) {
-      const settings = settingsDoc.data();
+    // 🚀 PERFORMANCE OPTIMIZATION: Cache settings for 60 seconds to avoid massive latency penalty on every order!
+    if (Date.now() - lastSettingsFetch > 60000) {
+      const settingsDoc = await adminDb.collection('settings').doc('notifications').get();
+      cachedSettings = settingsDoc.exists ? settingsDoc.data() : null;
+      lastSettingsFetch = Date.now();
+    }
+    
+    if (cachedSettings) {
+      const settings = cachedSettings;
       if (settings?.telegramChatId) chatId = settings.telegramChatId;
       
       // Check if specific type is enabled
@@ -38,7 +47,7 @@ export const sendTelegramNotification = async (type: NotificationType, data: any
       };
       
       const settingKey = settingsMapping[type];
-      if (settings && typeof settings[settingKey] === 'boolean') {
+      if (typeof settings[settingKey] === 'boolean') {
         enabled = settings[settingKey];
       }
     }
@@ -64,13 +73,14 @@ export const sendTelegramNotification = async (type: NotificationType, data: any
       parse_mode: 'HTML'
     });
 
-    await logNotification({
+    // 🚀 PERFORMANCE OPTIMIZATION: Fire-and-forget logging. If Vercel kills it, we just lose a log, no big deal.
+    logNotification({
       orderId: data.orderId || null,
       notificationType: type,
       message,
       recipient: chatId,
       status: 'sent'
-    });
+    }).catch(console.error);
     
     return true;
   } catch (error: any) {
@@ -81,14 +91,14 @@ export const sendTelegramNotification = async (type: NotificationType, data: any
       return sendTelegramNotification(type, data, retryCount + 1);
     }
     
-    await logNotification({
+    logNotification({
       orderId: data.orderId || null,
       notificationType: type,
       message,
       recipient: chatId,
       status: 'failed',
       failureReason: error.message
-    });
+    }).catch(console.error);
     return false;
   }
 };
