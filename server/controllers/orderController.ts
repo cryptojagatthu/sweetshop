@@ -34,14 +34,17 @@ export const confirmOrder = async (req: Request, res: Response) => {
       }
     }
     
-    // 🚀 PERFORMANCE OPTIMIZATION: Fire-and-forget Telegram notifications!
-    // Send standard New Order Notification (this will just console.log if TELEGRAM config is missing)
-    sendTelegramNotification('New Order', savedData).catch(console.error);
+    // Vercel Serverless freezes after res.json(), so we MUST await Telegram API calls to guarantee delivery.
+    // To minimize latency, we execute them concurrently if there are multiple.
+    const notificationPromises = [];
+    notificationPromises.push(sendTelegramNotification('New Order', savedData).catch(console.error));
 
     // Check for high value alert
     if (savedData.amount > 5000 || savedData.instructions?.toLowerCase().includes('bulk') || savedData.instructions?.toLowerCase().includes('wedding')) {
-      sendTelegramNotification('Bulk Order Alert', savedData).catch(console.error);
+      notificationPromises.push(sendTelegramNotification('Bulk Order Alert', savedData).catch(console.error));
     }
+    
+    await Promise.allSettled(notificationPromises);
 
     res.json({ success: true, orderId: savedData.orderId || `ORD_MOCK_${Date.now()}`, docId });
   } catch (error: any) {
