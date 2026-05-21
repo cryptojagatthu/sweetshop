@@ -291,7 +291,7 @@ export default function Home() {
               </div>
               
               <div className="flex gap-4">
-                <a href="https://maps.app.goo.gl/3wGZpZyhEwY23k4x8" target="_blank" rel="noopener noreferrer" className="bg-brand-gold hover:bg-brand-cream text-brand-brown px-6 py-3 rounded text-sm font-semibold transition-colors">
+                <a href="https://maps.app.goo.gl/4BoZ1YzGKtk6Q67g6" target="_blank" rel="noopener noreferrer" className="bg-brand-gold hover:bg-brand-cream text-brand-brown px-6 py-3 rounded text-sm font-semibold transition-colors">
                   Get Directions
                 </a>
               </div>
