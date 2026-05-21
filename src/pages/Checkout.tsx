@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { useCartStore } from "../store/cartStore";
@@ -16,6 +16,13 @@ export default function Checkout() {
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState("");
   
+  // Auto-scroll to top when success screen is displayed
+  useEffect(() => {
+    if (success) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [success]);
+
   const total = getTotal();
   const deliveryCharges = total > 1000 ? 0 : 50;
   const finalTotal = total > 0 ? total + deliveryCharges : 0;
