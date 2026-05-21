@@ -218,7 +218,7 @@ export default function Home() {
                 <div className="relative aspect-square overflow-hidden bg-brand-beige">
                   <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                    <a href="https://wa.me/9108977077110" target="_blank" rel="noopener noreferrer" className="w-full bg-white text-brand-charcoal text-center py-2 rounded text-sm font-semibold hover:bg-brand-gold hover:text-white transition-colors">
+                    <a href={`https://wa.me/919885017876?text=Hello! I would like to quick-order ${product.name} (${product.weight}) - ${product.price} from Haji Syeed Sweets.`} target="_blank" rel="noopener noreferrer" className="w-full bg-white text-brand-charcoal text-center py-2 rounded text-sm font-semibold hover:bg-brand-gold hover:text-white transition-colors">
                       Quick Order
                     </a>
                   </div>

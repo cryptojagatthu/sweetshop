@@ -61,7 +61,7 @@ export default function Services() {
               <p className="text-brand-charcoal/70 leading-relaxed mb-6">{service.desc}</p>
               
               <a 
-                href={`https://wa.me/9108977077110?text=I am interested in your ${service.title} service.`}
+                href={`https://wa.me/919885017876?text=Hello! I am interested in your ${service.title} service for Haji Syeed Sweets. Please share the details.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-brand-brown font-medium group-hover:text-brand-gold transition-colors"

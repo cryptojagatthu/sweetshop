@@ -98,7 +98,7 @@ export default function Sweets() {
                       <p className="text-brand-gold font-bold text-lg">{sweet.price}</p>
                     </div>
                     
-                    <a href={`https://wa.me/9108977077110?text=I would like to order ${sweet.name} (${sweet.weight}) - ${sweet.price}`} target="_blank" rel="noopener noreferrer" className="bg-brand-brown hover:bg-brand-gold text-white px-4 py-2 rounded text-sm font-semibold transition-colors shadow-sm">
+                    <a href={`https://wa.me/919885017876?text=Hello! I would like to order ${sweet.name} (${sweet.weight}) - ${sweet.price} from Haji Syeed Sweets.`} target="_blank" rel="noopener noreferrer" className="bg-brand-brown hover:bg-brand-gold text-white px-4 py-2 rounded text-sm font-semibold transition-colors shadow-sm">
                       Order
                     </a>
                   </div>

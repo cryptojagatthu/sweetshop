@@ -136,7 +136,7 @@ export default function Navbar() {
                   Order Now
                 </Link>
                 <a 
-                  href="https://wa.me/9108977077110" 
+                  href="https://wa.me/919885017876?text=Hello! I want to place an order or make an inquiry from the website." 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="w-full px-5 py-3 rounded border border-green-600 text-green-700 hover:bg-green-50 text-center font-medium transition-colors"

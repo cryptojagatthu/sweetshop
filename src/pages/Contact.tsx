@@ -42,7 +42,12 @@ export default function Contact() {
                   </div>
                   <div>
                     <h4 className="font-bold text-brand-brown mb-1">Phone / WhatsApp</h4>
-                    <p className="text-brand-charcoal/70 font-serif text-lg">08977077110</p>
+                    <p className="text-brand-charcoal/70 font-serif text-[17px] leading-relaxed">
+                      Call: <a href="tel:+918977077110" className="hover:text-brand-gold transition-colors font-semibold">089770 77110</a>
+                    </p>
+                    <p className="text-brand-charcoal/70 font-serif text-[17px] leading-relaxed">
+                      WhatsApp: <a href="https://wa.me/919885017876" target="_blank" rel="noopener noreferrer" className="hover:text-brand-gold transition-colors font-semibold">+91 98850 17876</a>
+                    </p>
                   </div>
                 </div>
 
@@ -68,10 +73,10 @@ export default function Contact() {
               </div>
 
               <div className="mt-10 pt-8 border-t border-brand-beige flex flex-wrap gap-4">
-                <a href="https://wa.me/9108977077110" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] hover:bg-[#20bd5a] text-white px-6 py-3 rounded font-medium transition-colors flex items-center gap-2">
+                <a href="https://wa.me/919885017876?text=Hello! I am reaching out from your website's contact page. I would like to make an inquiry." target="_blank" rel="noopener noreferrer" className="bg-[#25D366] hover:bg-[#20bd5a] text-white px-6 py-3 rounded font-medium transition-colors flex items-center gap-2">
                   Chat on WhatsApp
                 </a>
-                <a href="tel:08977077110" className="bg-brand-brown hover:bg-brand-gold text-white px-6 py-3 rounded font-medium transition-colors flex items-center gap-2">
+                <a href="tel:+918977077110" className="bg-brand-brown hover:bg-brand-gold text-white px-6 py-3 rounded font-medium transition-colors flex items-center gap-2">
                   Call Store directly
                 </a>
               </div>
