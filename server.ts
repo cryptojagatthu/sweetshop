@@ -24,12 +24,14 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// API Routes
-app.get("/api/health", (req, res) => {
+const apiRouter = express.Router();
+
+// API Router Routes (without /api prefix)
+apiRouter.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.post("/api/orders/create", async (req, res) => {
+apiRouter.post("/orders/create", async (req, res) => {
   try {
     const { amount, receipt } = req.body;
     if (!razorpay) {
@@ -54,7 +56,7 @@ app.post("/api/orders/create", async (req, res) => {
   }
 });
 
-app.post("/api/orders/verify", (req, res) => {
+apiRouter.post("/orders/verify", (req, res) => {
   // Basic verification simulation since this is for demonstration
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
   if (razorpay_order_id && razorpay_payment_id) {
@@ -64,10 +66,10 @@ app.post("/api/orders/verify", (req, res) => {
   }
 });
 
-app.post("/api/orders/confirm", confirmOrder);
-app.post("/api/orders/update-status", updateOrderStatus);
+apiRouter.post("/orders/confirm", confirmOrder);
+apiRouter.post("/orders/update-status", updateOrderStatus);
 
-app.get("/api/orders/track", async (req, res) => {
+apiRouter.get("/orders/track", async (req, res) => {
   try {
     const { orderId, phone } = req.query;
     if (!orderId || !phone) return res.status(400).json({ error: "Missing parameters" });
@@ -85,6 +87,10 @@ app.get("/api/orders/track", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// Mount the apiRouter under both /api and / to handle local and Vercel routing
+app.use("/api", apiRouter);
+app.use("/", apiRouter);
 
 // Start background jobs (note: on Vercel serverless, cron jobs should ideally be separate, but this is fine for local/render)
 if (!process.env.VERCEL) {
