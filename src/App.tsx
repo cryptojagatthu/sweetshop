@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
@@ -44,6 +45,7 @@ export default function App() {
         <FloatingWhatsApp />
         <FloatingCall />
       </div>
+      <Analytics />
     </Router>
   );
 }
