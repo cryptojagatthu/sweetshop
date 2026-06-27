@@ -13,7 +13,7 @@ interface TenantBranding {
 // Default fallback branding
 const DEFAULT_BRANDING: TenantBranding = {
   businessName: 'Sweet Shop',
-  ownerEmail: 'admin@example.com',
+  ownerEmail: 'cryptojagatthu@gmail.com',
   logoUrl: 'https://via.placeholder.com/150x50?text=Sweet+Shop',
   brandColor: '#4A3225', // brand-brown
   website: 'https://hajisyeedsweets.com'
@@ -153,37 +153,9 @@ class EmailService {
     }
     itemsHtml += '</ul>';
 
-    const contentHtml = `
-      <p>Hello ${order.name},</p>
-      <p>Thank you for your order! We have received it and are currently processing it.</p>
-      
-      <table class="data-table">
-        <tr><th>Order Number:</th><td>${order.orderId || 'N/A'}</td></tr>
-        <tr><th>Payment Status:</th><td>${order.paymentStatus || 'Pending'}</td></tr>
-        <tr><th>Total Amount:</th><td>${order.amount} INR</td></tr>
-        <tr><th>Delivery Type:</th><td>${order.deliveryType}</td></tr>
-        <tr><th>Phone:</th><td>${order.phone}</td></tr>
-      </table>
-      
-      <h3>Order Items:</h3>
-      ${itemsHtml}
-      
-      <p>If you have any questions or need to make changes, please contact us.</p>
-    `;
-
-    const html = this.generateHtmlTemplate(branding, 'Order Confirmation', contentHtml);
-
-    // Send to Customer (if provided)
-    if (customerEmail) {
-      this.sendWithRetry({
-        from,
-        to: customerEmail,
-        subject: `Order Confirmation - ${order.orderId || 'Received'}`,
-        html
-      }).catch(console.error); // Do not block
-    }
-
-    // Always Send to Owner
+    // ----------------------------------------------------
+    // We only send the order details to the shop owner
+    // ----------------------------------------------------
     if (branding.ownerEmail) {
       const ownerContent = `
         <p>A new order has been placed on the website!</p>
@@ -191,7 +163,9 @@ class EmailService {
           <tr><th>Order Number:</th><td>${order.orderId || 'N/A'}</td></tr>
           <tr><th>Customer Name:</th><td>${order.name}</td></tr>
           <tr><th>Phone:</th><td>${order.phone}</td></tr>
+          <tr><th>Customer Email:</th><td>${customerEmail || 'N/A'}</td></tr>
           <tr><th>Amount:</th><td>${order.amount} INR</td></tr>
+          <tr><th>Delivery Type:</th><td>${order.deliveryType || 'N/A'}</td></tr>
           <tr><th>Instructions:</th><td>${order.instructions || 'None'}</td></tr>
         </table>
         <h3>Order Items:</h3>
@@ -203,7 +177,7 @@ class EmailService {
       this.sendWithRetry({
         from,
         to: branding.ownerEmail,
-        subject: `New Order Alert - ${order.orderId || 'Received'}`,
+        subject: `New Order Alert - ${order.orderId || 'Received'} from ${order.name}`,
         html: ownerHtml
       }).catch(console.error);
     }
