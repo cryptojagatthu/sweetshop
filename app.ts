@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
+import compression from "compression";
 import 'dotenv/config';
 
 import { confirmOrder, updateOrderStatus } from "./server/controllers/orderController.js";
@@ -20,6 +21,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 const app = express();
 const PORT = 3000;
 
+app.use(compression());
 app.use(cors());
 app.use(express.json());
 
@@ -193,7 +195,7 @@ if (!process.env.VERCEL) {
     });
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, { maxAge: '1y', immutable: true }));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
