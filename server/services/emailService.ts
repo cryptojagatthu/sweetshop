@@ -174,12 +174,12 @@ class EmailService {
 
       const ownerHtml = this.generateHtmlTemplate(branding, 'New Order Received', ownerContent);
 
-      this.sendWithRetry({
+      await this.sendWithRetry({
         from,
         to: branding.ownerEmail,
         subject: `New Order Alert - ${order.orderId || 'Received'} from ${order.name}`,
         html: ownerHtml
-      }).catch(console.error);
+      });
     }
   }
 
