@@ -7,6 +7,7 @@ import 'dotenv/config';
 import { confirmOrder, updateOrderStatus } from "./server/controllers/orderController.js";
 import { startDailySummaryJob } from "./server/jobs/dailySummaryJob.js";
 import { adminDb, adminAuth } from "./server/config/firebase-admin.js";
+import { emailService } from "./server/services/emailService.js";
 
 // Mock Razorpay initialization (since we may not have genuine keys)
 import Razorpay from "razorpay";
@@ -69,6 +70,26 @@ apiRouter.post("/orders/verify", (req, res) => {
 
 apiRouter.post("/orders/confirm", confirmOrder);
 apiRouter.post("/orders/update-status", updateOrderStatus);
+
+apiRouter.post("/contact", async (req, res) => {
+  try {
+    const { name, phone, email, subject, message } = req.body;
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    
+    // Capture IP if available
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    
+    // Send email without blocking the response
+    emailService.sendContactFormEmail({ name, phone, email, subject, message, ip: ip as string }).catch(console.error);
+    
+    res.json({ success: true, message: "Message received successfully" });
+  } catch (e: any) {
+    console.error("Contact form error:", e);
+    res.status(500).json({ error: e.message });
+  }
+});
 
 apiRouter.get("/orders/track", async (req, res) => {
   try {

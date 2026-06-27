@@ -1,7 +1,45 @@
 import { motion } from "motion/react";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    subject: "General Question",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Message sent successfully!");
+        setFormData({ name: "", phone: "", email: "", subject: "General Question", message: "" });
+      } else {
+        toast.error(data.error || "Failed to send message.");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <div className="pt-24 bg-brand-cream min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -112,39 +150,39 @@ export default function Contact() {
             <p className="text-brand-charcoal/70">Have a special request or feedback? We'd love to hear it.</p>
           </div>
           
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-brand-charcoal mb-2">Your Name</label>
-                <input type="text" className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all" placeholder="John Doe" />
+                <label className="block text-sm font-medium text-brand-charcoal mb-2">Your Name *</label>
+                <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all" placeholder="John Doe" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-brand-charcoal mb-2">Phone Number</label>
-                <input type="tel" className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all" placeholder="+91 98765 43210" />
+                <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all" placeholder="+91 98765 43210" />
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-brand-charcoal mb-2">Email Address</label>
-              <input type="email" className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all" placeholder="john@example.com" />
+              <label className="block text-sm font-medium text-brand-charcoal mb-2">Email Address *</label>
+              <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all" placeholder="john@example.com" />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-brand-charcoal mb-2">Subject</label>
-              <select className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all appearance-none text-brand-charcoal/80">
-                <option>Bulk Order Inquiry</option>
-                <option>Feedback</option>
-                <option>General Question</option>
+              <select value={formData.subject} onChange={(e) => setFormData({...formData, subject: e.target.value})} className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all appearance-none text-brand-charcoal/80">
+                <option value="Bulk Order Inquiry">Bulk Order Inquiry</option>
+                <option value="Feedback">Feedback</option>
+                <option value="General Question">General Question</option>
               </select>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-brand-charcoal mb-2">Your Message</label>
-              <textarea rows={4} className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all resize-none" placeholder="Write your message here..."></textarea>
+              <label className="block text-sm font-medium text-brand-charcoal mb-2">Your Message *</label>
+              <textarea rows={4} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} required className="w-full bg-brand-cream/50 border border-brand-brown/20 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all resize-none" placeholder="Write your message here..."></textarea>
             </div>
             
-            <button type="submit" className="w-full bg-brand-brown hover:bg-brand-gold text-white font-medium py-4 rounded-md transition-colors text-lg shadow-md">
-              Send Message
+            <button type="submit" disabled={isSubmitting} className="w-full bg-brand-brown hover:bg-brand-gold text-white font-medium py-4 rounded-md transition-colors text-lg shadow-md flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+              {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : 'Send Message'}
             </button>
           </form>
         </div>

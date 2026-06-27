@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { adminDb } from '../config/firebase-admin.js';
 import { sendTelegramNotification } from '../services/telegramService.js';
+import { emailService } from '../services/emailService.js';
 import admin from 'firebase-admin';
 
 export const confirmOrder = async (req: Request, res: Response) => {
@@ -38,6 +39,9 @@ export const confirmOrder = async (req: Request, res: Response) => {
     // To minimize latency, we execute them concurrently if there are multiple.
     const notificationPromises = [];
     notificationPromises.push(sendTelegramNotification('New Order', savedData).catch(console.error));
+    
+    // Add Email notification to queue (non-blocking)
+    notificationPromises.push(emailService.sendOrderEmail(savedData, savedData.email).catch(console.error));
 
     // Check for high value alert
     if (savedData.amount > 5000 || savedData.instructions?.toLowerCase().includes('bulk') || savedData.instructions?.toLowerCase().includes('wedding')) {
