@@ -2,7 +2,11 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import compression from "compression";
+import dns from "dns";
 import 'dotenv/config';
+
+// 🚀 FIX FOR RENDER: Force IPv4 to prevent Nodemailer from crashing with ENETUNREACH on IPv6
+dns.setDefaultResultOrder('ipv4first');
 
 import { confirmOrder, updateOrderStatus } from "./server/controllers/orderController.js";
 import { startDailySummaryJob } from "./server/jobs/dailySummaryJob.js";
