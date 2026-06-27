@@ -40,11 +40,15 @@ class EmailService {
       host: SMTP_HOST,
       port: parseInt(SMTP_PORT, 10),
       secure: parseInt(SMTP_PORT, 10) === 465, 
+      connectionTimeout: 10000, // 10 seconds timeout to prevent hanging forever
+      socketTimeout: 10000,
       auth: {
         user: SMTP_USER,
         pass: SMTP_PASSWORD,
       },
     });
+
+    console.log(`📧 Nodemailer Configured! Host: ${SMTP_HOST}:${SMTP_PORT}, User: ${SMTP_USER.substring(0, 3)}***@gmail.com`);
     
     this.isConfigured = true;
   }
@@ -75,6 +79,7 @@ class EmailService {
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
+        console.log(`⏳ Attempting to send email to ${mailOptions.to} (Attempt ${attempt})...`);
         const info = await this.transporter.sendMail(mailOptions);
         console.log(`✅ Email sent successfully to ${mailOptions.to} [Attempt ${attempt}] - MessageId: ${info.messageId}`);
         return true;
