@@ -159,14 +159,14 @@ class EmailService {
     itemsHtml += '</ul>';
 
     // ----------------------------------------------------
-    // We only send the order details to the shop owner
+    // Send the order details to the shop owner
     // ----------------------------------------------------
     if (branding.ownerEmail) {
       const ownerContent = `
         <p>A new order has been placed on the website!</p>
         <table class="data-table">
           <tr><th>Order Number:</th><td>${order.orderId || 'N/A'}</td></tr>
-          <tr><th>Customer Name:</th><td>${order.name}</td></tr>
+          <tr><th>Customer Name:</th><td>${order.customerName || order.name || 'Customer'}</td></tr>
           <tr><th>Phone:</th><td>${order.phone}</td></tr>
           <tr><th>Customer Email:</th><td>${customerEmail || 'N/A'}</td></tr>
           <tr><th>Amount:</th><td>${order.amount} INR</td></tr>
@@ -182,8 +182,35 @@ class EmailService {
       await this.sendWithRetry({
         from,
         to: branding.ownerEmail,
-        subject: `New Order Alert - ${order.orderId || 'Received'} from ${order.name}`,
+        subject: `New Order Alert - ${order.orderId || 'Received'} from ${order.customerName || order.name || 'Customer'}`,
         html: ownerHtml
+      });
+    }
+
+    // ----------------------------------------------------
+    // Send order confirmation to the customer
+    // ----------------------------------------------------
+    if (customerEmail) {
+      const customerContent = `
+        <p>Hi ${order.customerName || order.name || 'there'},</p>
+        <p>Thank you for your order! We have received it and are currently processing it.</p>
+        <table class="data-table">
+          <tr><th>Order Number:</th><td>${order.orderId || 'N/A'}</td></tr>
+          <tr><th>Amount:</th><td>${order.amount} INR</td></tr>
+          <tr><th>Delivery Type:</th><td>${order.deliveryType || 'N/A'}</td></tr>
+        </table>
+        <h3>Your Items:</h3>
+        ${itemsHtml}
+        <p>We will notify you once your order is on the way. If you have any questions, feel free to reply to this email.</p>
+      `;
+
+      const customerHtml = this.generateHtmlTemplate(branding, 'Order Confirmation', customerContent);
+
+      await this.sendWithRetry({
+        from,
+        to: customerEmail,
+        subject: `Order Confirmation - ${order.orderId || 'Received'}`,
+        html: customerHtml
       });
     }
   }
